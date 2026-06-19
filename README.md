@@ -6,6 +6,8 @@ This repo is set up for a small local machine: CPU-only works, and an NVIDIA RTX
 
 `models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf`
 
+The model is downloaded from a GitHub Release asset, not Git LFS and not `codeload.github.com`.
+
 ## Setup
 
 ```bash
@@ -16,6 +18,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install -e .
+python scripts/download_model.py
 ```
 
 For NVIDIA/CUDA acceleration, reinstall `llama-cpp-python` with CUDA support after activating the venv:
@@ -38,7 +41,7 @@ python -m pip install --force-reinstall --no-cache-dir llama-cpp-python
 bash scripts/run_api.sh
 ```
 
-The API starts on `http://127.0.0.1:8000` by default.
+The API starts on `http://127.0.0.1:8000` by default. If the model file is missing, `scripts/run_api.sh` downloads it from the release asset automatically.
 
 Useful environment variables:
 
@@ -71,7 +74,7 @@ The dataframe endpoint accepts record-style rows and inserts the output column i
 
 ## Model Source And License
 
-The bundled GGUF is redistributed from:
+The GGUF is redistributed from:
 
 `LiquidAI/LFM2.5-1.2B-Instruct-GGUF`
 
@@ -79,5 +82,8 @@ Default file:
 
 `LFM2.5-1.2B-Instruct-Q4_K_M.gguf`
 
-The model is under the Liquid AI LFM Open License v1.0. See `licenses/LFM_OPEN_LICENSE_v1.0.txt`.
+Direct GitHub download:
 
+`https://github.com/Glass-Half-Full/orc-llm/releases/download/liquidai-lfm2.5-q4-k-m/LFM2.5-1.2B-Instruct-Q4_K_M.gguf`
+
+The model is under the Liquid AI LFM Open License v1.0. See `licenses/LFM_OPEN_LICENSE_v1.0.txt`.
