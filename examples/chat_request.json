@@ -1,0 +1,15 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are concise and practical."
+    },
+    {
+      "role": "user",
+      "content": "Write one sentence explaining what this local model service does."
+    }
+  ],
+  "max_tokens": 80,
+  "temperature": 0.1
+}
+

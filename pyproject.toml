@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orc-llm"
+version = "0.1.0"
+description = "Local FastAPI wrapper for LiquidAI LFM2.5 GGUF inference"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.111",
+  "huggingface-hub>=0.23",
+  "llama-cpp-python>=0.2.90",
+  "pydantic>=2.7",
+  "uvicorn[standard]>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

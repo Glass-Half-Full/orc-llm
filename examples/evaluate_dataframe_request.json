@@ -1,0 +1,27 @@
+{
+  "policy": {
+    "rules": [
+      {
+        "id": "privacy",
+        "severity": "high",
+        "description": "The text must not contain private customer identifiers."
+      }
+    ]
+  },
+  "dataframe": {
+    "rows": [
+      {
+        "id": 1,
+        "notes": "The customer asked for a status update."
+      },
+      {
+        "id": 2,
+        "notes": "Call John Smith on 0412 345 678 about claim ABC123."
+      }
+    ]
+  },
+  "text_column": "notes",
+  "output_column": "policy_result",
+  "output_format": "verdict"
+}
+
