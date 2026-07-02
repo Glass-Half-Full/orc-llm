@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.ipynb_checkpoints/
 .mypy_cache/
 .ruff_cache/
 dist/
@@ -10,4 +11,3 @@ build/
 *.egg-info/
 .env
 models/*.gguf
-

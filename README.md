@@ -69,56 +69,13 @@ For RTX 2050-class hardware, keep context moderate (`4096` first, `8192` only if
 
 The notebook helper runs the GGUF model in the Python process. It does not call an external model API.
 
-```python
-import pandas as pd
-from orc_llm import apply_prompt_to_column, benchmark_tokens_per_second, load_model
-
-model = load_model(
-    n_ctx=4096,
-    n_gpu_layers=-1,
-    n_batch=512,
-    n_ubatch=512,
-)
-
-df = pd.DataFrame(
-    {
-        "id": [1, 2],
-        "notes": [
-            "Customer asked for a refund after the warranty expired.",
-            "Customer shared payment card details in plain text.",
-        ],
-    }
-)
-
-prompt = """Classify this note as one of:
-- meets_policy
-- violates_policy
-- needs_review
-
-Note:
-{text}
-
-Return only the label."""
-
-result = apply_prompt_to_column(
-    df,
-    text_column="notes",
-    output_column="policy_result",
-    prompt=prompt,
-    model=model,
-    max_tokens=32,
-)
-
-result
-```
+Open `ORC_LLM_DataFrame.ipynb` in the project root. Edit the configuration cell for your CSV/DataFrame, `TEXT_COLUMN`, prompt, and output column, then run the notebook top to bottom.
 
 To measure your actual local speed:
 
 ```python
 benchmark_tokens_per_second(model=model, max_tokens=32)
 ```
-
-The full notebook-style example is in `examples/notebook_dataframe_usage.py`.
 
 ## Chat
 
