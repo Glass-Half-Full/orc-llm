@@ -1,12 +1,14 @@
 # orc-llm
 
-FastAPI wrapper for the LiquidAI `LFM2.5-1.2B-Instruct` GGUF model.
+Local notebook and FastAPI wrapper for the LiquidAI `LFM2.5-1.2B-Instruct` GGUF model.
 
 This repo is set up for a small local machine: CPU-only works, and an NVIDIA RTX 2050 can offload layers through `llama-cpp-python` when installed with CUDA support. The default model is the practical quantized file:
 
 `models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf`
 
 The model is downloaded from a GitHub Release asset, not Git LFS and not `codeload.github.com`.
+
+After that one-time download, inference is fully local and does not require API keys or external model/API calls.
 
 ## Setup
 
@@ -18,6 +20,13 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -U pip
 python -m pip install -e .
+python scripts/download_model.py
+```
+
+For Jupyter/DataFrame usage, install the notebook extra instead:
+
+```bash
+python -m pip install -e ".[notebook]"
 python scripts/download_model.py
 ```
 
@@ -48,11 +57,68 @@ Useful environment variables:
 ```bash
 export ORC_LLM_MODEL_PATH="models/LFM2.5-1.2B-Instruct-Q4_K_M.gguf"
 export ORC_LLM_N_CTX=4096
-export ORC_LLM_N_GPU_LAYERS=999
+export ORC_LLM_N_GPU_LAYERS=-1
+export ORC_LLM_N_BATCH=512
+export ORC_LLM_N_UBATCH=512
 export ORC_LLM_N_THREADS=8
 ```
 
-For RTX 2050-class hardware, keep context moderate (`4096` or `8192`) unless you have a specific reason to spend memory on a longer prompt.
+For RTX 2050-class hardware, keep context moderate (`4096` first, `8192` only if you have memory headroom). Use `ORC_LLM_N_GPU_LAYERS=-1` with a CUDA-enabled `llama-cpp-python` build to offload all layers. If you hit GPU memory pressure, reduce `ORC_LLM_N_CTX` to `2048` or set fewer GPU layers. For CPU-only runs, set `ORC_LLM_N_GPU_LAYERS=0` and tune `ORC_LLM_N_THREADS` to your physical CPU cores.
+
+## Jupyter DataFrame Usage
+
+The notebook helper runs the GGUF model in the Python process. It does not call an external model API.
+
+```python
+import pandas as pd
+from orc_llm import apply_prompt_to_column, benchmark_tokens_per_second, load_model
+
+model = load_model(
+    n_ctx=4096,
+    n_gpu_layers=-1,
+    n_batch=512,
+    n_ubatch=512,
+)
+
+df = pd.DataFrame(
+    {
+        "id": [1, 2],
+        "notes": [
+            "Customer asked for a refund after the warranty expired.",
+            "Customer shared payment card details in plain text.",
+        ],
+    }
+)
+
+prompt = """Classify this note as one of:
+- meets_policy
+- violates_policy
+- needs_review
+
+Note:
+{text}
+
+Return only the label."""
+
+result = apply_prompt_to_column(
+    df,
+    text_column="notes",
+    output_column="policy_result",
+    prompt=prompt,
+    model=model,
+    max_tokens=32,
+)
+
+result
+```
+
+To measure your actual local speed:
+
+```python
+benchmark_tokens_per_second(model=model, max_tokens=32)
+```
+
+The full notebook-style example is in `examples/notebook_dataframe_usage.py`.
 
 ## Chat
 
@@ -62,7 +128,7 @@ curl -s http://127.0.0.1:8000/v1/chat/completions \
   -d @examples/chat_request.json
 ```
 
-## Dataframe Policy Check
+## Dataframe Policy Check API
 
 ```bash
 curl -s http://127.0.0.1:8000/v1/evaluate-dataframe \

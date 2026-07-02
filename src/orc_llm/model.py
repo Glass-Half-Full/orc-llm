@@ -40,10 +40,17 @@ class LocalLiquidModel:
             "model_path": str(self.settings.model_path),
             "n_ctx": self.settings.n_ctx,
             "n_gpu_layers": self.settings.n_gpu_layers,
+            "n_batch": self.settings.n_batch,
+            "n_ubatch": self.settings.n_ubatch,
+            "use_mmap": self.settings.use_mmap,
+            "use_mlock": self.settings.use_mlock,
+            "offload_kqv": self.settings.offload_kqv,
             "verbose": self.settings.verbose,
         }
         if self.settings.n_threads is not None:
             kwargs["n_threads"] = self.settings.n_threads
+        if self.settings.n_threads_batch is not None:
+            kwargs["n_threads_batch"] = self.settings.n_threads_batch
 
         self._llm = Llama(**kwargs)
 
@@ -84,4 +91,3 @@ class LocalLiquidModel:
 
 
 model = LocalLiquidModel()
-

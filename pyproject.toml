@@ -18,6 +18,10 @@ dependencies = [
 dev = [
   "pytest>=8",
 ]
+notebook = [
+  "ipykernel>=6",
+  "pandas>=2.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
